@@ -5,3 +5,7 @@ gzserver --verbose -s libgazebo_ros_init.so -s libgazebo_ros_factory.so -s libga
 gzclient <br/>
 ros2 run gazebo_ros spawn_entity.py -topic robot_description -entity my_bot <br/>
 ros2 launch my_bot rsp.launch.py
+## Control the mobile robot on Gazebo
+After running the urdf.xacro file on gazebo run the command below :
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+ 
