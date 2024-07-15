@@ -1,40 +1,64 @@
 <?xml version="1.0"?>
 <robot name="robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+   <material name="grey">
+      <color rgba="0.7 0.7 0.7 1"/>
+   </material>
 
-<material name="grey">
- <color rgba="0.7 0.7 0.7 1"/>
-</material>
+   <material name="green">
+      <color rgba="0 0.6 0 1"/>  
+   </material>
 
-<material name="green">
- <color rgba="0 0.6 0 1"/>
-</material>
+   <material name="white">
+      <color rgba="1 1 1 1"/>
+   </material>
 
-<material name="white">
-<color rgba="1 1 1 1"/>
-</material>
+   <!-- Chassis -->
 
    <link name="base_link">
-       <inertial>
-          <mass value="5.0"/>
-          <origin xyz="0 0 0" rpy="0 0 0"/>
-          <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
-       </inertial>
-       <visual>
-          <geometry>
-             <box size="0.6 0.4 0.1" />
-          </geometry>
-          <origin xyz="0 0 0" rpy="0 0 0"/>
-          <material name="green"/>
-       </visual>
-       <collision>
+      <inertial>
+         <mass value="5.0"/>
+         <origin xyz="0 0 0" rpy="0 0 0"/>
+         <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
+      </inertial>
+      <visual>
          <geometry>
             <box size="0.6 0.4 0.1" />
          </geometry>
          <origin xyz="0 0 0" rpy="0 0 0"/>
-       </collision>
+         <material name="green"/>
+      </visual>
+      <collision>
+         <geometry>
+            <box size="0.6 0.4 0.1" />
+         </geometry>
+         <origin xyz="0 0 0" rpy="0 0 0"/>
+      </collision>
    </link>
-
    
+   <!-- Lidar -->
+
+   <link name="lidar">
+      <inertial>
+         <mass value="0.2"/>
+         <origin xyz="0 0 0" rpy="0 0 0"/>
+         <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+      </inertial>
+      <visual>
+         <geometry>
+            <cylinder radius="0.05" length="0.05" />
+         </geometry>
+         <origin xyz="0 0 0" rpy="0 0 0"/>
+         <material name="white"/>
+      </visual>
+      <collision>
+         <geometry>
+            <box size="0.1 0.1 0.05"/>
+         </geometry>
+         <origin xyz="0 0 0" rpy="0 0 0"/>
+      </collision>
+   </link>
+   
+   <!-- Wheels -->
 
    <xacro:macro name="wheel_link" params="prefix">
       <link name="${prefix}_wheel">
@@ -56,7 +80,7 @@
            </geometry>
            <origin xyz="0 0 0" rpy="1.57 0 0"/>
          </collision>
-     </link>
+      </link>
    </xacro:macro>
    
    <xacro:wheel_link prefix="left" />
@@ -64,12 +88,13 @@
    <xacro:wheel_link prefix="left2" />
    <xacro:wheel_link prefix="right2" />
 
-
+   <!-- Joints -->
+ 
    <joint name="base_left_wheel_joint" type="continuous">
-    <parent link="base_link"/>
-    <child link="left_wheel"/>
-    <origin xyz="-0.2 0.25 -0.1" rpy="0 0 0"/>
-    <axis xyz="0 1 0"/>
+      <parent link="base_link"/>
+      <child link="left_wheel"/>
+      <origin xyz="-0.2 0.25 -0.1" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
    </joint>
 
    <joint name="base_left_wheel2_joint" type="continuous">
@@ -80,10 +105,10 @@
    </joint>
 
    <joint name="base_right_wheel_joint" type="continuous">
-    <parent link="base_link"/>
-    <child link="right_wheel"/>
-    <origin xyz="-0.2 -0.25 -0.1" rpy="0 0 0"/>
-    <axis xyz="0 1 0"/>
+      <parent link="base_link"/>
+      <child link="right_wheel"/>
+      <origin xyz="-0.2 -0.25 -0.1" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
    </joint>
 
    <joint name="base_right_wheel2_joint" type="continuous">
@@ -92,37 +117,47 @@
       <origin xyz="0.2 -0.25 -0.1" rpy="0 0 0"/>
       <axis xyz="0 1 0"/>
    </joint>
-
+   
+   <joint name="base_lidar_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="lidar"/>
+      <origin xyz="0.2 0 0.075" rpy="0 0 0"/>
+   </joint>
+   
+   <!-- Motor Controlling PlugIn -->
+   
    <gazebo>
-	    <plugin name="front_wheel" filename="libgazebo_ros_diff_drive.so">
-    	<!-- Wheel Information -->
-        <left_joint>base_left_wheel_joint</left_joint>
-        <right_joint>base_right_wheel_joint</right_joint>
-        <wheel_separation>0.064</wheel_separation>
-        <wheel_diameter>0.1</wheel_diameter>
+	   <plugin name="front_wheel" filename="libgazebo_ros_diff_drive.so">
+    	   <!-- Wheel Information -->
+         <left_joint>base_left_wheel_joint</left_joint>
+         <right_joint>base_right_wheel_joint</right_joint>
+         <wheel_separation>0.064</wheel_separation>
+         <wheel_diameter>0.1</wheel_diameter>
  
-        <!-- Limit -->
-        <max_wheel_torque>200</max_wheel_torque>
-        <max_wheel_acceleration>10.0</max_wheel_acceleration>
+         <!-- Limit -->
+         <max_wheel_torque>200</max_wheel_torque>
+         <max_wheel_acceleration>10.0</max_wheel_acceleration>
  
-        <!-- Output -->
-        <odometry_frame>odom</odometry_frame>
-        <robot_base_frame>base_link</robot_base_frame>
+         <!-- Output -->
+         <odometry_frame>odom</odometry_frame>
+         <robot_base_frame>base_link</robot_base_frame>
  
-        <publish_odom>true</publish_odom>
-        <publish_odom_tf>true</publish_odom_tf>
-        <publish_wheel_tf>true</publish_wheel_tf>
+         <publish_odom>true</publish_odom>
+         <publish_odom_tf>true</publish_odom_tf>
+         <publish_wheel_tf>true</publish_wheel_tf>
  
-	</plugin>
+	   </plugin>
   	</gazebo>
 
+   <!-- Motor Controlling PlugIn -->
+
 	<gazebo>
-	  <plugin name="rear_wheel" filename="libgazebo_ros_diff_drive.so">
-    	<!-- Wheel Information -->
-        <left_joint>base_left_wheel2_joint</left_joint>
-        <right_joint>base_right_wheel2_joint</right_joint>
-        <wheel_separation>0.064</wheel_separation>
-        <wheel_diameter>0.1</wheel_diameter>
+	   <plugin name="rear_wheel" filename="libgazebo_ros_diff_drive.so">
+    	   <!-- Wheel Information -->
+         <left_joint>base_left_wheel2_joint</left_joint>
+         <right_joint>base_right_wheel2_joint</right_joint>
+         <wheel_separation>0.064</wheel_separation>
+         <wheel_diameter>0.1</wheel_diameter>
  
         <!-- Limit -->
         <max_wheel_torque>200</max_wheel_torque>
@@ -135,10 +170,37 @@
         <publish_odom>true</publish_odom>
         <publish_odom_tf>true</publish_odom_tf>
         <publish_wheel_tf>true</publish_wheel_tf>
- 
-	  </plugin>
-  	
-</gazebo>
+	   </plugin>
+   </gazebo>
 
+   <!-- Lidar PlugIn -->
+
+   <gazebo reference="lidar">
+      <sensor name='lidar' type='ray'>"
+         <pose relative_to='lidar'>0 0 0 0 0 0</pose>
+         <topic>lidar</topic>
+         <update_rate>10</update_rate>
+         <ray>
+            <scan>
+               <horizontal>
+                  <samples>640</samples>
+                  <resolution>1</resolution>
+                  <min_angle>-3.141592653589793238462643383279502884197</min_angle>
+                  <max_angle>3.141592653589793238462643383279502884197</max_angle>
+               </horizontal>
+            </scan>
+            <range>
+               <min>0.3</min>
+               <max>12.0</max>
+               <resolution>0.01</resolution>
+            </range>
+         </ray>
+         <always_on>1</always_on>
+         <visualize>true</visualize>
+      </sensor>
+      <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+         <render_engine>ogre2</render_engine>
+      </plugin>
+   </gazebo>
 
 </robot>
