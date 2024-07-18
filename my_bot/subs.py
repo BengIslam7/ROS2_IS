@@ -29,16 +29,14 @@ class SubscriberNode(Node):
         cmd = Twist()
         if msg.range<=0.5 :
             print("Avoiding Obstacle")
-            cmd.linear.x=0.0
-            self.publisher_.publish(cmd)
+            pass
 
     def dist2_callback(self,msg:Range):
         self.get_logger().info("Sensor 2 > Distance from obstacle : "+str(msg.range))
         cmd = Twist()
         if msg.range<=0.5 :
             print("Avoiding Obstacle")
-            cmd.linear.x=0.0
-            self.publisher_.publish(cmd)
+            pass
     
 
 def main(args=None):
