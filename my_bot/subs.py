@@ -27,14 +27,14 @@ class SubscriberNode(Node):
     def dist_callback(self,msg:Range):
         self.get_logger().info("Sensor 1 > Distance from obstacle : "+str(msg.range))
         cmd = Twist()
-        if msg.range<=0.5 :
+        while msg.range<=0.5 :
             print("Avoiding Obstacle")
             pass
 
     def dist2_callback(self,msg:Range):
         self.get_logger().info("Sensor 2 > Distance from obstacle : "+str(msg.range))
         cmd = Twist()
-        if msg.range<=0.5 :
+        while msg.range<=0.5 :
             print("Avoiding Obstacle")
             pass
     
