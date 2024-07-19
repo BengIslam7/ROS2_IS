@@ -5,7 +5,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.substitutions import LaunchConfiguration
 
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription , ExecuteProcess
 from launch_ros.actions import Node
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.substitutions import FindPackageShare
@@ -35,14 +35,23 @@ def generate_launch_description():
     slam_launch = IncludeLaunchDescription(PythonLaunchDescriptionSource([PathJoinSubstitution([FindPackageShare('slam_toolbox'),'launch','online_async_launch.py'])]),
         launch_arguments={'slam_params_file':PathJoinSubstitution([FindPackageShare('my_bot'),'config','mapper_params_online_async.yaml']),'use_sim_time':'true'}.items()
     )
+    
+    rviz_node = Node(package='rviz2',executable='rviz2',name='rviz2',output='screen',arguments=['-d',PathJoinSubstitution([FindPackageShare('my_bot'),'config','slam_config.rviz'])])
+    
+    # Execute gzserver and gzclient
+    gzserver_process = ExecuteProcess(
+        cmd=['gzserver', os.path.join(pkg_path, 'worlds', 'my_world.world'),
+             '-s', 'libgazebo_ros_init.so',
+             '-s', 'libgazebo_ros_factory.so',
+             '-s', 'libgazebo_ros_force_system.so'],
+        output='screen'
+    )
 
-    gazebo_launch = IncludeLaunchDescription(PythonLaunchDescriptionSource([PathJoinSubstitution([FindPackageShare('gazebo_ros'),'launch','gazebo.launch.py'])]),
-        launch_arguments={'world':PathJoinSubstitution([FindPackageShare('my_bot'),'worlds','my_world.world']),'use_sim_time':'true'}.items()
+    gzclient_process = ExecuteProcess(
+        cmd=['gzclient'],
+        output='screen'
     )
     
-
-    
-
     # Launch!
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -50,8 +59,9 @@ def generate_launch_description():
             default_value='false',
             description='Use sim time if true'
         ),
+        gzserver_process,
+        gzclient_process,
+        rviz_node,
         node_robot_state_publisher,
-        slam_launch,
-        gazebo_launch
+        slam_launch
     ])
-
