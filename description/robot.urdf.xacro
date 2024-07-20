@@ -33,10 +33,10 @@
     </material>
 
    <!-- Chassis -->
-
+   <link name="base_footprint"></link>
    <link name="base_link">
       <inertial>
-         <mass value="5.0"/>
+         <mass value="2.0"/>
          <origin xyz="0 0 0" rpy="0 0 0"/>
          <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
       </inertial>
@@ -55,7 +55,6 @@
       </collision>
    </link>
    
-   <link name="base_footprint"></link>
    
    <link name="gps">
       <inertial>
@@ -356,7 +355,7 @@
  
          <!-- Output -->
          <odometry_frame>odom</odometry_frame>
-         <robot_base_frame>base_link</robot_base_frame>
+         <robot_base_frame>base_footprint</robot_base_frame>
  
          <publish_odom>true</publish_odom>
          <publish_odom_tf>true</publish_odom_tf>
@@ -381,7 +380,7 @@
  
         <!-- Output -->
         <odometry_frame>odom</odometry_frame>
-        <robot_base_frame>base_link</robot_base_frame>
+        <robot_base_frame>base_footprint</robot_base_frame>
  
         <publish_odom>true</publish_odom>
         <publish_odom_tf>true</publish_odom_tf>
@@ -556,4 +555,8 @@
       <material>Gazebo/Blue</material>
    </gazebo>
     
+
+
+
+
 </robot>
