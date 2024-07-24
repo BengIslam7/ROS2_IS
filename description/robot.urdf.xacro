@@ -342,6 +342,7 @@
    <!-- Motor Controlling PlugIn -->
    
    <gazebo>
+      <material>Gazebo/Balck</material>
 	   <plugin name="front_wheel" filename="libgazebo_ros_diff_drive.so">
     	<!-- Wheel Information -->
          <left_joint>base_left_wheel_joint</left_joint>
@@ -555,8 +556,4 @@
       <material>Gazebo/Blue</material>
    </gazebo>
     
-
-
-
-
 </robot>
