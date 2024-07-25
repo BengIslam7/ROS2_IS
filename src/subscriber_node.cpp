@@ -15,9 +15,8 @@ public:
             "/gps", 10, std::bind(&SubscriberNode::gps2_callback, this, std::placeholders::_1));
         dist_subscriber_ = this->create_subscription<sensor_msgs::msg::Range>(
             "/distance/pr", 10, std::bind(&SubscriberNode::dist_callback, this, std::placeholders::_1));
-        // Uncomment if the second distance sensor is required
-        // dist2_subscriber_ = this->create_subscription<sensor_msgs::msg::Range>(
-        //     "/distance/pr2", 10, std::bind(&SubscriberNode::dist2_callback, this, std::placeholders::_1));
+        dist2_subscriber_ = this->create_subscription<sensor_msgs::msg::Range>(
+             "/distance/pr2", 10, std::bind(&SubscriberNode::dist2_callback, this, std::placeholders::_1));
     }
 
 private:
@@ -31,12 +30,10 @@ private:
 
     void dist_callback(const sensor_msgs::msg::Range::SharedPtr msg) {
         RCLCPP_INFO(this->get_logger(), "Sensor 1 > Distance from obstacle: %f", msg->range);
-        auto cmd = geometry_msgs::msg::Twist();
-        if (msg->range <= 0.5) {
-            RCLCPP_INFO(this->get_logger(), "Avoiding Obstacle");
-            cmd.angular.z = -1.0;
-            publisher_->publish(cmd);            
-        }
+    }
+
+    void dist2_callback(const sensor_msgs::msg::Range::SharedPtr msg) {
+        RCLCPP_INFO(this->get_logger(), "Sensor 2 > Distance from obstacle: %f", msg->range);
     }
     
 
@@ -45,7 +42,7 @@ private:
     rclcpp::Subscription<geometry_msgs::msg::Vector3Stamped>::SharedPtr gps_controller_subscriber_;
     rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr gps_subscriber_;
     rclcpp::Subscription<sensor_msgs::msg::Range>::SharedPtr dist_subscriber_;
-    // rclcpp::Subscription<sensor_msgs::msg::Range>::SharedPtr dist2_subscriber_;
+    rclcpp::Subscription<sensor_msgs::msg::Range>::SharedPtr dist2_subscriber_;
 };
 
 int main(int argc, char **argv) {
